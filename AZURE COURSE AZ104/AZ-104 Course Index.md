@@ -104,15 +104,6 @@ Some topics get introduced in one module and finished in another. Worth knowing 
 
 ---
 
-## Portfolio publishing
-
-This vault is ready to publish as a GitHub learning-evidence repo once screenshots have been checked for private account details.
-
-- [[GitHub Publishing Workflow]] — repo setup, pre-publish checks, push commands and LinkedIn workflow.
-- [[LinkedIn Post Draft - AZ-104 Notes and Labs]] — draft post and screenshot ideas.
-
----
-
 ## Reference
 
 - [AZ-104 study guide — skills measured](https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104)
