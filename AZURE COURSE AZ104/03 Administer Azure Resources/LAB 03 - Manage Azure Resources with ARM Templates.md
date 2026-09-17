@@ -1,0 +1,317 @@
+---
+lab:
+  title: 'Lab 03: Manage Azure resources by using Azure Resource Manager Templates'
+  module: Administer Azure Resources
+  description: Deploy Azure resources using templates. 
+  duration: 50 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Resource Manager
+    - Azure JSON templates
+---
+
+> **Module:** [[03 - Administer Azure Resources]]  ·  **Index:** [[AZ-104 Course Index]]
+
+# Lab 03 - Manage Azure resources by using Azure Resource Manager Templates
+
+## Lab introduction
+
+In this lab, you learn how to automate resource deployments. You learn about Azure Resource Manager templates and Bicep templates. You learn about the different ways of deploying the templates.
+
+This lab requires an Azure subscription. Your subscription type may affect the availability of features in this lab. You may change the region, but the steps are written using **East US**.
+
+## Estimated timing: 50 minutes
+
+## Lab scenario
+
+Your team wants to look at ways to automate and simplify resource deployments. Your organization is looking for ways to reduce administrative overhead, reduce human error and increase consistency.
+
+## Architecture diagram
+
+![Diagram of the tasks.](../_attachments/az104-lab03-architecture.png)
+
+## Job skills
+
++ Task 1: Create an Azure Resource Manager template.
++ Task 2: Edit an Azure Resource Manager template and redeploy the template.
++ Task 3: Configure the Cloud Shell and deploy a template with Azure PowerShell.
++ Task 4: Deploy a template with the CLI.
++ Task 5: Deploy a resource by using Azure Bicep.
+
+## Task 1: Create an Azure Resource Manager template
+
+In this task, we will create a managed disk in the Azure portal. Managed disks are storage designed to be used with virtual machines. Once the disk is deployed you will export a template that you can use in other deployments.
+
+1. Sign in to the **Azure portal** - `https://portal.azure.com`.
+
+2. Search for and select `Disks`.
+
+3. On the **Storage Center | Azure Disks** page, select the **Resources** tab, and then select **Create**.
+
+4. On the **Create a managed disk** page, configure the disk and then select **Ok**.
+
+| Setting | Value |
+| --- | --- |
+| Subscription | *your subscription* |
+| Resource Group | `az104-rg3` (If necessary, select **Create new**.)
+| Disk name | `az104-disk1` |
+| Region | **East US** |
+| Availability zone | **No infrastructure redundancy required** |
+| Source type | **None** |
+| Performance | **Standard HDD** (change size) |
+| Size | **32 Gib** |
+
+> [!note]
+> We are creating a simple managed disk so you can practice with templates. Azure managed disks are block-level storage volumes that are managed by Azure.
+
+> [!note]
+> If deployment fails due to capacity or quota limits, adjust the configuration or choose a different region.
+
+5. Click **Review + Create** then select **Create**.
+
+6. Monitor the notifications (upper right) and after the deployment select **Go to resource**.
+
+7. In the **Automation** blade, select **Export template**.
+
+8. Take a minute to review the **Template** and **Parameters** files.
+
+9. From the **Template** section, click **Download** and save the template to the local drive. Then switch to the **Parameters** section and do the same.
+
+10. Use File Explorer to open the **Downloads** folder on your computer. Notice there are two JSON files (template and parameters).
+
+> [!tip] Did you know?
+> You can export an entire resource group or just specific resources within that resource group.
+
+## Task 2: Edit an Azure Resource Manager template and then redeploy the template
+
+In this task, you use the downloaded template to deploy a new managed disk. This task outlines how to quickly and easily repeat deployments.
+
+1. In the Azure portal, search for and select `Deploy a custom template`.
+
+2. On the **Custom deployment** blade, notice there is the ability to use a **Quickstart template**. There are many built-in templates as shown in the drop-down menu.
+
+3. Instead of using a Quickstart, select **Build your own template in the editor**.
+
+4. On the **Edit template** blade, click **Load file** and upload the **template.json** file you downloaded to the local disk.
+
+5. Within the editor pane, make these changes.
+
++ Change **disks_az104_disk1_name** to `disk_name` (two places to change)
++ Change **az104-disk1** to `az104-disk2` (one place to change)
+
+6. Notice this is a **Standard** disk. The location is **eastus**. The disk size is **32GB**.
+
+7. **Save** your changes.
+
+8. Don't forget the parameters file. Select **Edit parameters**, click **Load file** and upload the **parameters.json**.
+
+9. Make this change so it matches the template file.
+
+Change **disks_az104_disk1_name** to **disk_name** (one place to change)
+
+10. **Save** your changes.
+
+11. Complete the custom deployment settings:
+
+| Setting | Value |
+| --- |--- |
+| Subscription | *your subscription* |
+| Resource Group | `az104-rg3` |
+| Region | **(US) East US** |
+| Disk_name | `az104-disk2` |
+
+12. Select **Review + Create** and then select **Create**.
+
+13. Select **Go to resource**. Verify **az104-disk2** was created.
+
+14. On the **Overview** blade, select the resource group, **az104-rg3**. You should now have two disks.
+
+15. In the **Settings** section, click **Deployments**.
+
+> [!note]
+> All deployments details are documented in the resource group. It is a good practice to review the first few template-based deployments to ensure success prior to using the templates for large-scale operations.
+
+16. Select a deployment and review the content of the **Input** and **Template** blades.
+
+## Task 3: Configure the Cloud Shell and deploy a template with PowerShell
+
+In this task, you work with the Azure Cloud Shell and Azure PowerShell. Azure Cloud Shell is an interactive, authenticated, browser-accessible terminal for managing Azure resources. It provides the flexibility of choosing the shell experience that best suits the way you work, either Bash or PowerShell. In this task, you use PowerShell to deploy a template.
+
+1. Select the **Cloud Shell** icon in the top right of the Azure Portal. Alternately, you can navigate directly to `https://shell.azure.com`.
+
+![Screenshot of cloud shell icon.](../_attachments/az104-lab03-cloudshell-icon.png)
+
+2. When prompted to select either **Bash** or **PowerShell**, select **PowerShell**. If Cloud Shell fully loads into Bash mode, select **Switch to PowerShell**.
+
+> [!tip] Did you know?
+> If you mostly work with Linux systems, Bash (CLI) feels more familiar. If you mostly work with Windows systems, Azure PowerShell feels more familiar.
+
+3. Cloud Shell may launch directly into an ephemeral PowerShell session. No storage account configuration is required.
+
+> [!note]
+> Wait for the PowerShell prompt to appear before proceeding.
+
+4. Select the **Manage files** icon (top bar) and then select **Upload**.
+
+5. Upload both the template and parameters files from the **Downloads** directory.
+
+6. Select the **Editor (pencil)** icon and navigate to the template JSON file on the left in the navigation pane.
+
+7. Make a change. For example, change the disk name to **az104-disk3**. Use **Ctrl+S** to save your changes, then **Ctrl+Q** to close the editor.
+
+> [!note]
+> You can target your template deployment to a resource group, subscription, management group, or tenant. Depending on the scope of the deployment, you use different commands.
+
+8. If you have multiple subscriptions, first ensure PowerShell is using the correct subscription context. Run the following commands and, if needed, replace `<your-subscription-id>` with the subscription that contains **az104-rg3**.
+
+```powershell
+Get-AzContext
+Set-AzContext -Subscription <your-subscription-id>
+```
+
+> [!note]
+> This is especially important when Cloud Shell is running in ephemeral mode, because the active subscription can differ from the Azure portal context.
+
+9. To deploy to a resource group, use **New-AzResourceGroupDeployment**.
+
+```powershell
+New-AzResourceGroupDeployment -ResourceGroupName az104-rg3 -TemplateFile template.json -TemplateParameterFile parameters.json
+```
+10. Ensure the command completes and the ProvisioningState is **Succeeded**.
+
+11. Confirm the disk was created.
+
+```powershell
+Get-AzDisk | ft Name,ResourceGroupName,Location,DiskSizeGb,ProvisioningState
+```
+
+## Task 4: Deploy a template with the CLI
+
+1. Continue in the **Cloud Shell** select **Switch to Bash**. **Confirm** your choice.
+
+2. If you have multiple subscriptions, first ensure the correct subscription context is set by running `az account show` to confirm the active subscription. If it does not match the subscription containing **az104-rg3**, run `az account set --subscription <your-subscription-id>` before proceeding. This is especially important when Cloud Shell is running in ephemeral mode, as switching from PowerShell to Bash may reset the subscription context.
+
+```sh
+az account show
+az account set --subscription <your-subscription-id>
+```
+
+3. Verify your files are available in the Cloud Shell storage. If you completed the previous task your template files should be available.
+
+```sh
+ls
+```
+
+4. Select the **Editor** (pencil) icon and navigate to the template JSON file.
+
+5. Make a change. For example, change the disk name to **az104-disk4**. Use **Ctrl+S** to save your changes, then **Ctrl+Q** to close the editor.
+
+> [!note]
+> You can target your template deployment to a resource group, subscription, management group, or tenant. Depending on the scope of the deployment, you use different commands.
+
+6. To deploy to a resource group, use **az deployment group create**.
+
+```sh
+az deployment group create --resource-group az104-rg3 --template-file template.json --parameters parameters.json
+```
+
+7. Ensure the command completes and the ProvisioningState is **Succeeded**.
+
+8. Confirm the disk was created.
+
+```sh
+az disk list --resource-group az104-rg3 --output table
+```
+
+## Task 5: Deploy a resource by using Azure Bicep
+
+In this task, you will use a Bicep file to deploy a managed disk. Bicep is a declarative automation tool that is built on ARM templates.
+
+1. Locate the **\Allfiles\Lab03\azuredeploydisk.bicep** file.
+
+2. Continue working in the **Cloud Shell** in a **Bash** session.
+
+3. Select **Manage files** and then **Upload** the Bicep file to Cloud Shell.
+
+4. Select **Open editor**.
+
+5. Select the **azuredeploydisk.bicep** file
+
+6. Take a minute to read through the Bicep template file. Notice how the disk resource is defined.
+
+7. Make the following changes:
+
++ Change the **managedDiskName** value, line 2, to **az104-disk5**.
++ Change the **diskSizeinGiB** value; line 7, to **32**.
++ Change the **sku name** value, line 26, to **StandardSSD_LRS**.
+
+8. Use **Ctrl+S** to save your changes, then **Ctrl+Q** to close the editor.
+
+9. Now, deploy the template.
+
+```
+az deployment group create --resource-group az104-rg3 --template-file azuredeploydisk.bicep
+```
+
+10. Confirm the disk was created.
+
+```sh
+az disk list --resource-group az104-rg3 --output table
+```
+
+> [!note]
+> You have successfully deployed five managed disks, each in a different way. Nice job!
+
+## Cleanup your resources
+
+If you are working with **your own subscription** take a minute to delete the lab resources. This will ensure resources are freed up and cost is minimized. The easiest way to delete the lab resources is to delete the lab resource group.
+
++ In the Azure portal, select the resource group, select **Delete the resource group**, **Enter resource group name**, and then click **Delete**. When the confirmation dialog appears stating that deleting the resource group is permanent and cannot be undone, click **Delete** again to complete the deletion.
++ Using Azure PowerShell, `Remove-AzResourceGroup -Name resourceGroupName`.
++ Using the CLI, `az group delete --name resourceGroupName`.
+
+## Extend your learning with Copilot
+
+Copilot can assist you in learning how to use the Azure scripting tools. Copilot can also assist in areas not covered in the lab or where you need more information. Open an Edge browser and choose Copilot (top right) or navigate to *copilot.microsoft.com*. Take a few minutes to try these prompts.
+
++ What is the format of the Azure Resource Manager template file? Explain each component with examples.
++ How do I use an existing Azure Resource Manager template?
++ Compare and contrast Azure Resource Manager templates and Azure Bicep templates.
+
+
+## Learn more with self-paced training
+
++ [Deploy Azure infrastructure by using JSON ARM templates](https://learn.microsoft.com/training/modules/create-azure-resource-manager-template-vs-code/). Write JSON Azure Resource Manager templates (ARM templates) by using Visual Studio Code to deploy your infrastructure to Azure consistently and reliably.
++ [Review the features and tools for Azure Cloud Shell](https://learn.microsoft.com/training/modules/review-features-tools-for-azure-cloud-shell/). Cloud Shell features and tools.
++ [Create Azure Resources Using Azure CLI](https://learn.microsoft.com/training/modules/create-azure-resources-by-using-azure-cli/). Learn to install Azure CLI across Windows, Linux, and macOS, execute commands interactively, create Bash automation scripts, and troubleshoot common issues.
++ [Build your first Bicep template](https://learn.microsoft.com/training/modules/build-first-bicep-template/). Define Azure resources within a Bicep template. Improve the consistency and reliability of your deployments, reduce the manual effort required, and scale your deployments across environments. Your template will be flexible and reusable by using parameters, variables, expressions, and modules.
+
+## Key takeaways
+
+Congratulations on completing the lab. Here are the main takeaways for this lab.
+
++ Azure Resource Manager templates let you deploy, manage, and monitor all the resources for your solution as a group, rather than handling these resources individually.
++ An Azure Resource Manager template is a JavaScript Object Notation (JSON) file that lets you manage your infrastructure declaratively rather than with scripts.
++ Rather than passing parameters as inline values in your template, you can use a separate JSON file that contains the parameter values.
++ Azure Resource Manager templates can be deployed in a variety of ways including the Azure portal, Azure PowerShell, and CLI.
++ Bicep is an alternative to Azure Resource Manager templates. Bicep uses a declarative syntax to deploy Azure resources.
++ Bicep provides concise syntax, reliable type safety, and support for code reuse. Bicep offers a first-class authoring experience for your infrastructure-as-code solutions in Azure.
+
+
+---
+
+## My lab notes
+
+> [!note] Fill this in while you work, not after
+> Anything that surprised you, anything that didn't match the script, and any portal path you had to hunt for.
+
+### What I actually did
+
+### Things that didn't go to plan
+
+### Commands / KQL worth keeping
+
+### Back to the module note
+Anything conceptual from this lab that belongs in **[[03 - Administer Azure Resources]]** — add it there, not here.

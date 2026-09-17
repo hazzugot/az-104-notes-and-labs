@@ -1,0 +1,28 @@
+# Obsidian workspace state
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+.obsidian/plugins/
+.trash/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local/private exports
+*.zip
+*.7z
+*.tar
+*.tar.gz
+
+# Secrets and credentials
+*.pem
+*.pfx
+*.key
+*.cer
+*.crt
+*.env
+*.env.*
+secrets.*
+credentials.*
+*.publish-sanitised.*
