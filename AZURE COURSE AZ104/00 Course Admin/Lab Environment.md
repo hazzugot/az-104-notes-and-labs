@@ -17,9 +17,7 @@ Temporary QA-issued training tenant. Nothing here is production, and the account
 | --- | --- |
 | **Portal** | `https://portal.azure.com` |
 | **Entra admin center** | `https://entra.microsoft.com` |
-| **Username** | `QA@QASTUDENTAZURE1005082.onmicrosoft.com` |
-| **Password** | `D!324119234146od` |
-| **Tenant** | `QASTUDENTAZURE1005082.onmicrosoft.com` |
+
 
 ## Lab conventions
 
